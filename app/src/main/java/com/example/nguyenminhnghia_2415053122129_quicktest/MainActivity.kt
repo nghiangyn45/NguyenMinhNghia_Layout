@@ -7,31 +7,51 @@ import com.example.nguyenminhnghia_2415053122129_quicktest.databinding.ActivityM
 
 class MainActivity : AppCompatActivity() {
 
-    // Khai báo ViewBinding khớp với tên file layout activity_main.xml
+    // Khai báo ViewBinding tự động ánh xạ giao diện XML
     private lateinit var binding: ActivityMainBinding
+
+    // Biến cờ (flag) phục vụ cho việc thay đổi trạng thái nội dung TextView khi bấm nút
+    private var isAlternativeContent = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Bắt sự kiện Click nút Tính toán
+        // 1. Xử lý sự kiện bấm nút Tính toán / Thay đổi nội dung (Đáp ứng yêu cầu Submit lần 2)
         binding.btnCalculate.setOnClickListener {
-            calculateBMI()
+            toggleAndCalculateBMI()
         }
 
-        // Lắng nghe trạng thái Switch (đã định nghĩa tường minh tham số)
+        // 2. Xử lý sự kiện bật/tắt Switch
         binding.switchSave.setOnCheckedChangeListener { _, isChecked ->
-            val status = if (isChecked) "Đã bật lưu lịch sử" else "Đã tắt lưu lịch sử"
+            val status = if (isChecked) "Đã bật lưu lịch sử đo" else "Đã tắt lưu lịch sử đo"
             Toast.makeText(this, status, Toast.LENGTH_SHORT).show()
+
+            // Cập nhật thay đổi trực tiếp lên TextView phụ nếu muốn
+            binding.tvTitle.text = if (isChecked) "BMI CALCULATOR (Đã bật lưu)" else "TÍNH CHỈ SỐ BMI"
         }
     }
 
-    private fun calculateBMI() {
+    private fun toggleAndCalculateBMI() {
+        // Đảo trạng thái cờ khi bấm nút
+        isAlternativeContent = !isAlternativeContent
+
+        if (isAlternativeContent) {
+            // Trạng thái 1: Thay đổi nội dung trực tiếp trên TextView theo yêu cầu submit lần 2
+            binding.tvResult.text = "Trạng thái: Đã xử lý thành công dữ liệu giao diện!"
+            Toast.makeText(this, "Đã thay đổi nội dung TextView thành công!", Toast.LENGTH_SHORT).show()
+        } else {
+            // Trạng thái 2: Thực hiện tính toán BMI chuẩn từ dữ liệu nhập vào EditText
+            calculateBMIProcess()
+        }
+    }
+
+    private fun calculateBMIProcess() {
         val weightStr = binding.edtWeight.text.toString().trim()
         val heightStr = binding.edtHeight.text.toString().trim()
 
-        // Validate dữ liệu trống
+        // Validate dữ liệu trống phòng thủ lỗi
         if (weightStr.isEmpty()) {
             binding.edtWeight.error = "Vui lòng nhập cân nặng!"
             binding.edtWeight.requestFocus()
@@ -52,10 +72,10 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        // Công thức tính chỉ số BMI
+        // Công thức tính BMI
         val bmi = weight / (height * height)
 
-        // Phân loại kết quả BMI
+        // Phân loại
         val classification = when {
             bmi < 18.5 -> "Gầy"
             bmi < 25.0 -> "Bình thường"
@@ -67,7 +87,7 @@ class MainActivity : AppCompatActivity() {
         val genderId = binding.rgGender.checkedRadioButtonId
         val gender = if (genderId == R.id.rbMale) "Nam" else "Nữ"
 
-        // Hiển thị kết quả lên CardView (TextView)
+        // Hiển thị kết quả chi tiết lên TextView trong CardView
         val resultText = String.format("BMI: %.2f (%s - %s)", bmi, classification, gender)
         binding.tvResult.text = resultText
     }
