@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">BMI Calculator</string>
+    <string name="title_bmi">TÍNH CHỈ SỐ BMI</string>
+    <string name="hint_weight">Nhập cân nặng (kg)</string>
+    <string name="hint_height">Nhập chiều cao (m, vd: 1.75)</string>
+    <string name="gender_male">Nam</string>
+    <string name="gender_female">Nữ</string>
+    <string name="switch_save">Lưu lịch sử đo</string>
+    <string name="btn_calculate">TÍNH BMI</string>
+    <string name="label_result">KẾT QUẢ BMI</string>
+</resources>
